@@ -2,15 +2,15 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
     <xs:annotation>
         <xs:documentation source="https://alps.io/spec/index.html">
-            A data format for defining simple descriptions of application-level semantics
+            A data format for defining simple descriptions of application-level semantics, similar in complexity to HTML microformats. An ALPS document can be used as a profile to explain the application semantics of a document with an application-agnostic media type.
         </xs:documentation>
-        <xs:appinfo source="https://alps.io/spec/index.html"/>
     </xs:annotation>
+
     <xs:element name="alps" type="alpsType"/>
     <xs:complexType name="alpsType">
         <xs:annotation>
             <xs:documentation>
-                A data format for defining simple descriptions of application-level semantics
+                The root element of an ALPS document. It contains descriptors that define the semantics of the application.
             </xs:documentation>
         </xs:annotation>
         <xs:sequence>
@@ -24,48 +24,45 @@
         </xs:sequence>
         <xs:attribute name="version" type="xs:string">
             <xs:annotation>
-                <xs:documentation> Indicates the version of the ALPS specification used in the document. </xs:documentation>
+                <xs:documentation>
+                    Indicates the version of the ALPS specification used in the document. Currently, the only valid value is '1.0'.
+                </xs:documentation>
             </xs:annotation>
         </xs:attribute>
     </xs:complexType>
-    <xs:element name="version" type="xs:string">
-        <xs:annotation>
-            <xs:documentation>
-                Indicates the version of the ALPS specification used in the document.
-            </xs:documentation>
-        </xs:annotation>
-    </xs:element>
+
     <xs:element name="doc" type="docType">
         <xs:annotation>
             <xs:documentation>
-                A text field that contains free-form, usually human-readable, text.
+                A text field that contains free-form, usually human-readable, text. It may have 'href' and 'format' properties.
             </xs:documentation>
         </xs:annotation>
     </xs:element>
+
     <xs:element name="title" type="xs:string">
         <xs:annotation>
             <xs:documentation>
-                Defines the semantics of specific data elements or state transitions that MAY exist in an associated
-                representation.
+                Contains a single text string that represents the title of this document. This element should appear only once in a document as a child of the 'alps' element.
             </xs:documentation>
         </xs:annotation>
     </xs:element>
+
     <xs:element name="descriptor" type="descriptorType">
         <xs:annotation>
             <xs:documentation>
-                Defines the semantics of specific data elements or state transitions that MAY exist in an associated
-                representation.
+                Defines the semantics of specific data elements or state transitions that MAY exist in an associated representation.
             </xs:documentation>
         </xs:annotation>
     </xs:element>
+
     <xs:element name="link" type="linkType">
         <xs:annotation>
             <xs:documentation>
-                An element that identifies a link between the current ALPS element
-                and some other (possibly external) resource.
+                An element that identifies a link between the current ALPS element and some other (possibly external) resource.
             </xs:documentation>
         </xs:annotation>
     </xs:element>
+
     <xs:element name="ext" type="extType">
         <xs:annotation>
             <xs:documentation>
@@ -73,13 +70,7 @@
             </xs:documentation>
         </xs:annotation>
     </xs:element>
-    <xs:element name="contentType" type="xs:string">
-        <xs:annotation>
-            <xs:documentation>
-                A media-type values registered with the IANA.
-            </xs:documentation>
-        </xs:annotation>
-    </xs:element>
+
     <xs:complexType name="descriptorType" mixed="true">
         <xs:sequence>
             <xs:choice minOccurs="0" maxOccurs="unbounded">
@@ -88,10 +79,26 @@
                 <xs:element name="link" type="linkType" minOccurs="0"/>
             </xs:choice>
         </xs:sequence>
-        <!-- documented attribute -->
-        <xs:attribute name="href" type="xs:anyURI"/>
-        <xs:attribute name="id" type="xs:string"/>
+        <xs:attribute name="href" type="xs:anyURI">
+            <xs:annotation>
+                <xs:documentation>
+                    Points to another 'descriptor' either within the existing ALPS document as a fragment or in another ALPS document as an absolute URL.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="id" type="xs:string">
+            <xs:annotation>
+                <xs:documentation>
+                    A document-wide unique identifier for the descriptor. It should be an opaque string that does not contain any URL unsafe characters.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
         <xs:attribute name="type">
+            <xs:annotation>
+                <xs:documentation>
+                    Indicates the type of hypermedia control. Valid values are 'semantic', 'safe', 'unsafe', and 'idempotent'.
+                </xs:documentation>
+            </xs:annotation>
             <xs:simpleType>
                 <xs:restriction base="xs:string">
                     <xs:enumeration value="semantic"/>
@@ -101,40 +108,82 @@
                 </xs:restriction>
             </xs:simpleType>
         </xs:attribute>
-        <xs:attribute name="doc" type="xs:string"/>
-        <xs:attribute name="ext" type="xs:string"/>
-        <xs:attribute name="name" type="xs:string"/>
-        <xs:attribute name="title" type="xs:string"/>
-        <xs:attribute name="rt" type="rtType"/>
-        <xs:attribute name="def" type="xs:anyURI"/>
-        <xs:attribute name="tag" type="xs:string"/>
-        <xs:attribute name="rel" type="relType"/>
+        <xs:attribute name="name" type="xs:string">
+            <xs:annotation>
+                <xs:documentation>
+                    Indicates the name of the 'descriptor' as found in generic representations.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="rt" type="rtType">
+            <xs:annotation>
+                <xs:documentation>
+                    Indicates the kind of resource that will be returned when executing the specified network request.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="rel" type="relType">
+            <xs:annotation>
+                <xs:documentation>
+                    Contains a RFC5988 approved value: either an extension relation type (a URI) or a registered relation type (a short string).
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
         <xs:anyAttribute/>
     </xs:complexType>
+
     <xs:complexType name="extType">
         <xs:attribute name="id" type="xs:string" use="required">
             <xs:annotation>
                 <xs:documentation>
-                    `ext` element extends the ALPS document with author-specific information.
+                    A required identifier for the extension.
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="href" type="xs:string"/>
-        <xs:attribute name="value" type="xs:string"/>
-        <xs:attribute name="tag" type="xs:string"/>
+        <xs:attribute name="href" type="xs:string">
+            <xs:annotation>
+                <xs:documentation>
+                    Points to an external document which provides the definition of the extension.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="value" type="xs:string">
+            <xs:annotation>
+                <xs:documentation>
+                    Contains a string value for the extension.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
         <xs:anyAttribute/>
     </xs:complexType>
+
     <xs:complexType name="linkType">
-        <xs:attribute name="rel" type="xs:string"/>
-        <xs:attribute name="href" type="xs:anyURI"/>
-        <xs:attribute name="tag" type="xs:string"/>
-        <xs:attribute name="title" type="xs:string"/>
+        <xs:attribute name="rel" type="xs:string">
+            <xs:annotation>
+                <xs:documentation>
+                    Specifies the relationship between the current document and the linked document.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="href" type="xs:anyURI">
+            <xs:annotation>
+                <xs:documentation>
+                    Specifies the URL of the linked document.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
         <xs:anyAttribute/>
     </xs:complexType>
+
     <xs:complexType name="docType">
         <xs:simpleContent>
             <xs:extension base="xs:string">
                 <xs:attribute name="format">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Indicates how the text content should be parsed and/or rendered. Valid values are 'text', 'html', 'asciidoc', and 'markdown'.
+                        </xs:documentation>
+                    </xs:annotation>
                     <xs:simpleType>
                         <xs:restriction base="xs:string">
                             <xs:enumeration value="text"/>
@@ -144,20 +193,43 @@
                         </xs:restriction>
                     </xs:simpleType>
                 </xs:attribute>
-                <xs:attribute name="contentType" type="xs:string" />
-                <xs:attribute name="tag" type="xs:string" />
+                <xs:attribute name="href" type="xs:anyURI">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Points to a document that contains human-readable text that describes the associated 'descriptor' or ALPS document.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
             </xs:extension>
         </xs:simpleContent>
     </xs:complexType>
+
     <xs:simpleType name="rtType">
+        <xs:annotation>
+            <xs:documentation>
+                Defines the format for the 'rt' attribute, which should be a fragment identifier.
+            </xs:documentation>
+        </xs:annotation>
         <xs:restriction base="xs:string">
             <xs:pattern value=".*#.*"/>
         </xs:restriction>
     </xs:simpleType>
+
     <xs:simpleType name="relType">
+        <xs:annotation>
+            <xs:documentation>
+                Defines the format for the 'rel' attribute, which can be either a predefined IANA-registered relation type (a short string) or an extension relation type (a strict URI). The predefined types include all IANA-registered link relation types as of the last update of this schema.
+            </xs:documentation>
+        </xs:annotation>
         <xs:union memberTypes="predefinedRelType strictUriType"/>
     </xs:simpleType>
+
     <xs:simpleType name="predefinedRelType">
+        <xs:annotation>
+            <xs:documentation>
+                Contains all IANA-registered link relation types as of the last update of this schema. These are predefined, short string values for common relation types.
+            </xs:documentation>
+        </xs:annotation>
         <xs:restriction base="xs:string">
             <xs:enumeration value="about"/>
             <xs:enumeration value="acl"/>
@@ -287,6 +359,11 @@
         </xs:restriction>
     </xs:simpleType>
     <xs:simpleType name="strictUriType">
+        <xs:annotation>
+            <xs:documentation>
+                Defines the format for extension relation types, which must be a full URI starting with "http://" or "https://". These are used for custom relation types not registered with IANA.
+            </xs:documentation>
+        </xs:annotation>
         <xs:restriction base="xs:anyURI">
             <xs:pattern value="https?://.*"/>
         </xs:restriction>
